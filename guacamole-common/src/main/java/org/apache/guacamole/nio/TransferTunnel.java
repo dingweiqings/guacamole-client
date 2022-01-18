@@ -35,8 +35,6 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * @author kurt.ding
- * @date 2021/11/25 下午4:25
  * //TODO  refactor this to an interface
  */
 public class TransferTunnel {

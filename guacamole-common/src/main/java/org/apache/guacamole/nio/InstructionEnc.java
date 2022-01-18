@@ -30,8 +30,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author kurt.ding
- * @date 2021/11/25 下午4:40
  * ws server -> browser,guaca
  */
 public class InstructionEnc extends MessageToByteEncoder<GuacamoleInstruction> {

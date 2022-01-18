@@ -19,8 +19,6 @@
 package org.apache.guacamole.nio;
 
 /**
- * @author kurt.ding
- * @date 2022/1/7 下午2:45
  */
 public class GuacdProperties {
 	private String hostname;

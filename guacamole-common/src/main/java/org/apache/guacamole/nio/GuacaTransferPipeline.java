@@ -28,8 +28,6 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * @author kurt.ding
- * @date 2021/11/24 下午9:21
  */
 public class GuacaTransferPipeline extends ChannelInitializer<SocketChannel> {
 	private final static int MAX_FRAME_LENGTH = 1024 * 1024;

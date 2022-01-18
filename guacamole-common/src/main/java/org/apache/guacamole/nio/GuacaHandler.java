@@ -33,8 +33,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * @author kurt.ding
- * @date 2021/11/24 下午9:19
  */
 public class GuacaHandler extends SimpleChannelInboundHandler<GuacamoleInstruction> {
 	Logger logger = LoggerFactory.getLogger(GuacaHandler.class);

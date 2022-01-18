@@ -28,8 +28,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** 使用websocket时，继承这个endpoint，在和浏览器onOpen，onMessage 调用即可
- * @author kurt.ding
- * @date 2022/1/7 下午2:49
  */
 public abstract class WebsocketHandler {
 	public static final Map<String, TransferTunnel> GUACAD_HAND_MAP=new ConcurrentHashMap<>();

@@ -21,8 +21,6 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 /**
- * @author kurt.ding
- * @date 2022/1/7 下午2:52
  */
 public class TomcatWsSession implements WsSession {
 	Session session;

@@ -31,8 +31,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * @author kurt.ding
- * @date 2021/11/25 下午5:09
  * 解析 guaca -> ws server
  */
 public class InstructionDecoder extends ByteToMessageDecoder {

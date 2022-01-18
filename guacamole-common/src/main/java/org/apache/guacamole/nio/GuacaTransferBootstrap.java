@@ -32,8 +32,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * @author kurt.ding
- * @date 2021/11/24 下午9:13
  */
 public class GuacaTransferBootstrap  {
 	private final static long CONNECT_WAIT_TIMEOUT = 1000;
