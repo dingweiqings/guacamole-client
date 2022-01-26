@@ -40,10 +40,19 @@ public class ConnectionHelper {
 	 * Logger for this class
 	 */
 	Logger logger= LoggerFactory.getLogger(ConnectionHelper.class);
+	/**
+	 * Bootstrap
+	 */
+	BridgerBootstrap bridgerBootstrap;
 
-	GuacaTransferBootstrap guacaTransferBootstrap ;
-
+	/**
+	 * Guacamole Properties
+	 */
 	GuacdProperties guacdProperties;
+
+	/**
+	 * SINGLE INSTANCE
+	 */
 	private static ConnectionHelper INSTANCE;
 
 	public static ConnectionHelper getInstance(GuacdProperties properties) {
@@ -59,83 +68,93 @@ public class ConnectionHelper {
 
 	private ConnectionHelper(GuacdProperties guacdProperties) {
 		this.guacdProperties=guacdProperties;
-		guacaTransferBootstrap = new GuacaTransferBootstrap(guacdProperties);
+		bridgerBootstrap = new BridgerBootstrap(guacdProperties);
 	}
 
-	private  TransferTunnel createTunnel(GuacamoleConfiguration configuration){
-		return new TransferTunnel(configuration);
+	/**
+	 * Create tunnel
+	 * @param configuration  guacamole configuration
+	 */
+	private Bridger createOneBridger(GuacamoleConfiguration configuration){
+		return new Bridger(configuration);
 	}
-	public TransferTunnel openConnection(WsSession wsSession, GuacamoleConfiguration  configuration) {
-		TransferTunnel tunnel = createTunnel(configuration);
+
+	/**
+	 * Open connection
+	 * @param wsSession  websocket session
+	 * @param configuration  guacamole configuration
+	 * @return
+	 */
+	public Bridger openConnection(WsSession wsSession, GuacamoleConfiguration  configuration) {
+		Bridger tunnel = createOneBridger(configuration);
 		tunnel.session = wsSession;
 		try {
-			tunnel.channel = guacaTransferBootstrap.connect();
+			tunnel.channel = bridgerBootstrap.connect();
 			//TunnelEndpointNetty.GUACAD_HAND_MAP.put(channel!!.id().toString(), this)
 			//TunnelEndpointNetty.BROWSER_HAND_MAP.put(session!!.id().toString(), this)
-			tunnel.handshake();
+			tunnel.sayHello();
 		} catch (GuacamoleException e) {
 			logger.warn("Create tunnel failure ", e);
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			logger.warn("Create tunnel failure ", e);
 		}
 		try {
-			// open时，先告诉前端 tunnel的uuid
+			// open,send tunnel uuid
 			tunnel.sendInstruction(
 					new GuacamoleInstruction(
 							GuacamoleTunnel.INTERNAL_DATA_OPCODE,
 							tunnel.getUUID().toString()
 				)
 			);
-			//TODO register netty io loop,when get guacamole server msg, get access handler send to broswer
-			//服务器宕机，如何恢复
-			//路由表
-
-		}                    // Catch any thrown guacamole exception and attempt
+		}
+		// Catch any thrown guacamole exception and attempt
 		// to pass within the WebSocket connection, logging
 		// each error appropriately.
 		catch (GuacamoleClientException e) {
 			logger.info("WebSocket connection terminated: {}", e.getMessage());
 			logger.debug("WebSocket connection terminated due to client error.", e);
 			closeConnection(tunnel,
-					getUseSession(tunnel), e.getStatus().getGuacamoleStatusCode(),
+					 e.getStatus().getGuacamoleStatusCode(),
 					e.getWebSocketCode()
 			);
 		} catch (GuacamoleConnectionClosedException e) {
-			logger.debug("Connection to guacd closed.", e);
-			closeConnection(tunnel,getUseSession(tunnel), GuacamoleStatus.SUCCESS);
-		} catch (GuacamoleException e) {
-			logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
-			logger.debug("Internal error during connection to guacd.", e);
-			closeConnection(tunnel,
-					tunnel.session, e.getStatus().getGuacamoleStatusCode(),
-					e.getWebSocketCode()
-			);
+			logger.error("Connection to guacamole server closed.", e.getMessage());
+			logger.debug("Connection to guacamole server closed.", e);
+			closeConnection(tunnel, GuacamoleStatus.SUCCESS);
 		} catch (IOException e) {
+			logger.error("It occurs I/O error when send instruction to guacamole server.", e.getMessage());
 			logger.debug("I/O error prevents further reads.", e);
-			closeConnection(tunnel,getUseSession(tunnel), GuacamoleStatus.SERVER_ERROR);
+			closeConnection(tunnel, GuacamoleStatus.SERVER_ERROR);
 		}
 		return tunnel;
 	}
-	private void closeConnection(TransferTunnel tunnel, WsSession session, GuacamoleStatus guacStatus) {
-		this.closeConnection(tunnel,session, guacStatus.getGuacamoleStatusCode(), guacStatus.getWebSocketCode());
+
+	/**
+	 * Close connection
+	 * @param bridger the bridger that need to close
+	 * @param guacadStatus close status given by  guacamole server
+	 */
+	private void closeConnection(Bridger bridger,  GuacamoleStatus guacadStatus) {
+		this.closeConnection(bridger, guacadStatus.getGuacamoleStatusCode(), guacadStatus.getWebSocketCode());
 	}
 
-	private void closeConnection(TransferTunnel tunnel, WsSession wsSession, int guacamoleStatusCode, int webSocketCode) {
+	/**
+	 * Close connection
+	 * @param bridger  the bridger that need to close
+	 * @param guacamoleStatusCode close status given by  guacamole server
+	 * @param webSocketCode  ws status code given by ws client or ws server
+	 */
+	private void closeConnection(Bridger bridger,  int guacamoleStatusCode, int webSocketCode) {
 		try {
 			CloseReason.CloseCode code = CloseReason.CloseCodes.getCloseCode(webSocketCode);
 			String message = Integer.toString(guacamoleStatusCode);
 			//TODO send close reason to user
-			tunnel.session.sendText(message);
-			logger.info("Close session {}  {} {} ", tunnel.session.id(), code, message);
-			tunnel.close();
+			bridger.session.sendText(message);
+			logger.info("Close session {}  {} {} ", bridger.session.id(), code, message);
+			bridger.close();
 
 		} catch (IOException e) {
 			logger.debug("Unable to close WebSocket connection.", e);
 		}
-	}
-	private WsSession getUseSession(TransferTunnel tunnel){
-		return tunnel.session;
 	}
 }

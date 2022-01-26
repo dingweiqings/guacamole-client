@@ -30,14 +30,19 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * ws server -> browser,guaca
+ * ws server -> ws client guaca
  */
 public class InstructionEnc extends MessageToByteEncoder<GuacamoleInstruction> {
+	/**
+	 * Logger
+	 */
 	Logger logger = LoggerFactory.getLogger(InstructionEnc.class);
 
 	@Override
 	protected void encode(ChannelHandlerContext ctx, GuacamoleInstruction instruction, ByteBuf out) throws Exception {
-		//	logger.info("Encode to byte buf ,send to guacad  {}", instruction);
+		if (logger.isTraceEnabled()) {
+			logger.info("Encode to byte buf ,send to guacamole server   {}", instruction);
+		}
 		ByteBuf buffer = ByteBufUtil.encodeString(ctx.alloc(), CharBuffer.wrap(instruction.toString()), StandardCharsets.UTF_8);
 		out.writeBytes(buffer);
 		buffer.release();

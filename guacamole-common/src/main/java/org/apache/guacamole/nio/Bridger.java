@@ -22,6 +22,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleConnectionClosedException;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -35,109 +36,169 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * //TODO  refactor this to an interface
+ * Ws ---> Bridger ----> Guacamole Server(GS)
+ * Ws  &lt;--- Bridger &lt;---- Guacamole Server(GS)
  */
-public class TransferTunnel {
-	Logger logger = LoggerFactory.getLogger(TransferTunnel.class);
+public class Bridger {
+	/**
+	 * Logger
+	 */
+	Logger logger = LoggerFactory.getLogger(Bridger.class);
+	/**
+	 * Bridger <-> Guacamole Server , Channel to communicate with GS
+	 */
 	Channel channel;
+	/**
+	 * Ws  <-> Bridger  ,WsSession to communicate with ws client
+	 */
 	WsSession session;
-
+	/**
+	 *  Bridger use this GuacamoleConfiguration when handshake with GS
+	 */
 	GuacamoleConfiguration config;
-	GuacaBrowserDecoder browserDecoder;
-
+	/**
+	 * Decoder for ws
+	 */
+	WsDecoder browserDecoder;
+	/**
+	 * guacamole connection id
+	 *
+	 */
 	private String id;
+	/**
+	 * ws connection uuid
+	 */
 	private UUID uuid = UUID.randomUUID();
 
-	public TransferTunnel(Channel channel, WsSession session, GuacamoleConfiguration configuration) {
+	/***
+	 * Constructor
+	 * @param channel GS channel  in this Bridger
+	 * @param session  Ws session in this bridger
+	 * @param configuration  guacamole configuration in this bridger
+	 */
+	public Bridger(Channel channel, WsSession session, GuacamoleConfiguration configuration) {
 		this.channel = channel;
 		this.session = session;
 		this.config = configuration;
-		this.browserDecoder = new GuacaBrowserDecoder();
+		this.browserDecoder = new WsDecoder();
 	}
 
+	/**
+	 * Get property
+	 */
 	public Channel getChannel() {
 		return channel;
 	}
 
-	public TransferTunnel(GuacamoleConfiguration configuration){
+	/**
+	 *
+	 * @param configuration
+	 * guacamole configuration in this bridger
+	 */
+	public Bridger(GuacamoleConfiguration configuration){
 		this.config=configuration;
-		this.browserDecoder=new GuacaBrowserDecoder();
+		this.browserDecoder=new WsDecoder();
 	}
-
+	/**
+	 * Get property
+	 */
 	public GuacamoleConfiguration getConfig() {
 		return config;
 	}
 
+	/**
+	 * Set property
+	 * @param config   configuration in this bridger
+	 */
 	public void setConfig(GuacamoleConfiguration config) {
 		this.config = config;
 	}
-
+	/**
+	 * Get property
+	 */
 	public String getId() {
 		return id;
 	}
 
+	/**
+	 * Set property
+	 * @param id id of the connection communicating with Guacamole Server
+	 */
 	public void setId(String id) {
 		this.id = id;
 	}
-
+	/**
+	 * Get property
+	 */
 	public UUID getUUID() {
 		return uuid;
 	}
-
+	/**
+	 * Set property ,Ws uuid
+	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
-
 	/**
-	 * 关闭维持的两个socket
+	 * close left socket and right tcp channel
+	 * @throws IOException
 	 */
 	public void close() throws IOException {
 		channel.close();
 		session.close();
 	}
 
+	/**
+	 * Send instruction to ws client
+	 * @param instruction which to send ws client
+	 * @throws GuacamoleConnectionClosedException
+	 * @throws GuacamoleClientException
+	 * @throws IOException
+	 */
 	public void sendInstruction(GuacamoleInstruction instruction) throws GuacamoleConnectionClosedException,GuacamoleClientException,IOException {
 		session.sendText(instruction.toString());
 	}
 
 	/**
-	 * 转发给浏览器
+	 * When bridger receives guacamole instruction , then send to ws peer in browser
 	 *
-	 * @param instruction
+	 * @param ins
 	 */
-	public void receiveGuacadMsg(GuacamoleInstruction instruction) {
+	public void receiveGuacamoleInstruction(GuacamoleInstruction ins) {
 		try {
-			session.sendText(instruction.toString());
+			session.sendText(ins.toString());
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error("Bridger send msg to  error",e);
 			try {
 				close();
 			} catch (IOException ex) {
-				ex.printStackTrace();
+				logger.error("Bridger send msg to  error",ex);
 			}
 		}
 	}
 
 
 	/**
-	 * 发送给guaca
+	 * When bridger get msg from ws peer ,then send to guacamole server
 	 *
 	 * @param msg
 	 */
 	public void onMessage(String msg) {
-		logger.info("Send msg to guacd {}",msg);
+		if(logger.isTraceEnabled()){
+			logger.info("Send msg to guacd {}",msg);
+		}
 		GuacamoleInstruction instruction = null;
 		try {
 			instruction = browserDecoder.decode(msg);
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (GuacamoleException e) {
+			logger.error("Decoder ws msg error ",e);
 		}
-
+		//handle ws msg by code
 		if (instruction.getOpcode().equals(GuacamoleTunnel.INTERNAL_DATA_OPCODE) || instruction.getOpcode().equals("nop")) {
 
 			// Respond to ping requests
 			List<String> args = instruction.getArgs();
-			//如果是和ws server的ping 则，回复
+			//ws ping
 			if (args.size() >= 2 && args.get(0).equals("ping")) {
 				try {
 					session.sendText(
@@ -147,21 +208,29 @@ public class TransferTunnel {
 							).toString()
 					);
 				} catch (IOException e) {
-					e.printStackTrace();
+					logger.error("Send msg to ws peer error",e);
 				}
 			}
-			//如果是和ws server 间的握手，忽略
 			return;
 		}
 
-		writeGuacadInstruction(instruction);
+		writeGuacamoleInstruction(instruction);
 	}
 
-	public ChannelFuture writeGuacadInstruction(GuacamoleInstruction instruction) {
+	/**
+	 * Send instruction to GS
+	 * @param instruction
+	 * @return
+	 */
+	public ChannelFuture writeGuacamoleInstruction(GuacamoleInstruction instruction) {
 		return channel.writeAndFlush(instruction);
 	}
 
-	public void handshake() throws GuacamoleServerException {
+	/**
+	 * say hello
+	 * @throws GuacamoleServerException
+	 */
+	public void sayHello() throws GuacamoleServerException {
 
 		// Get protocol / connection ID
 		String select_arg = config.getConnectionID();
@@ -169,19 +238,7 @@ public class TransferTunnel {
 			select_arg = config.getProtocol();
 
 		// Send requested protocol or connection ID
-		writeGuacadInstruction(new GuacamoleInstruction("select", select_arg)).addListener((future) -> {
-			logger.info("Init tunnel future {}", future.get());
-		});
+		writeGuacamoleInstruction(new GuacamoleInstruction("select", select_arg));
 	}
 
-	public GuacamoleInstruction expect(GuacamoleInstruction instruction, String opcode) throws GuacamoleServerException {
-		if (instruction == null)
-			throw new GuacamoleServerException("End of stream while waiting for \"" + opcode + "\".");
-
-		// Ensure instruction has expected opcode
-		if (!instruction.getOpcode().equals(opcode))
-			throw new GuacamoleServerException("Expected \"" + opcode + "\" instruction but instead received \"" + instruction.getOpcode() + "\".");
-
-		return instruction;
-	}
 }

@@ -32,25 +32,52 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
+ * nio client connection group
  */
-public class GuacaTransferBootstrap  {
+public class BridgerBootstrap {
+	/**
+	 * Logger
+	 */
+	Logger logger = LoggerFactory.getLogger(BridgerBootstrap.class);
+
+	/**
+	 * Timeout config
+	 */
 	private final static long CONNECT_WAIT_TIMEOUT = 1000;
+	/**
+	 * Guacamole properties
+	 */
 	private final GuacdProperties guacdProperties;
-	Logger logger = LoggerFactory.getLogger(GuacaTransferBootstrap.class);
-	/// 通过nio方式来接收连接和处理连接,默
+
+	/**
+	 * create  nio event group
+	 */
 	private EventLoopGroup group = new NioEventLoopGroup();
+
+	/**
+	 * client bootstrap
+	 */
+
 	private Bootstrap bootstrap = new Bootstrap();
 
-	public GuacaTransferBootstrap(GuacdProperties guacdProperties) {
+	/**
+	 * Constructor
+	 * @param guacdProperties  guacamole server host and port
+	 */
+	public BridgerBootstrap(GuacdProperties guacdProperties) {
 		this.guacdProperties = guacdProperties;
 		bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000)
 				.group(group).channel(NioSocketChannel.class)
 
-				.handler(new GuacaTransferPipeline());
+				.handler(new GuacamoleBridgerPipeline());
 	}
 
-	public Channel connect() throws InterruptedException, IOException {
-		//同步等待连接服务端
+	/**
+	 * Connect to Guacamole Server
+	 * @throws IOException
+	 * 			it occurs timeout or error when channel connects guacamole server  throw IOException
+	 */
+	public Channel connect() throws IOException {
 		ChannelFuture f = bootstrap.connect(guacdProperties.getHostname(), guacdProperties.getPort());
 		f.awaitUninterruptibly(CONNECT_WAIT_TIMEOUT);
 		if (f.isCancelled()) {
@@ -62,12 +89,6 @@ public class GuacaTransferBootstrap  {
 			logger.info("Connect host {} port {} success", guacdProperties.getHostname(), guacdProperties.getPort());
 			return f.channel();
 		}
-
-
 		throw new IOException("Connection error");
-	}
-
-	public Bootstrap getBootstrap() {
-		return bootstrap;
 	}
 }

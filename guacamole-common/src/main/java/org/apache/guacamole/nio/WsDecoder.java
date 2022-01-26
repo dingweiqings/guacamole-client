@@ -18,7 +18,8 @@
  */
 package org.apache.guacamole.nio;
 
-import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.DecoderWsMsgException;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
 import org.apache.guacamole.protocol.GuacamoleParser;
 import org.slf4j.Logger;
@@ -27,19 +28,26 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * <p>
- * 解析浏览器-> ws server
+ *     ws server
  */
-public class GuacaBrowserDecoder {
+public class WsDecoder {
 	/**
 	 * Logger for this class.
 	 */
-	Logger logger = LoggerFactory.getLogger(GuacaBrowserDecoder.class);
+	Logger logger = LoggerFactory.getLogger(WsDecoder.class);
+
 	/**
 	 * Guacamole instruction parser.
 	 */
 	GuacamoleParser parser = new GuacamoleParser();
 
-	public GuacamoleInstruction decode(String str) throws Exception {
+	/**
+	 * Parser Instruction
+	 * @param str str decode to instruction
+	 * @return
+	 * @throws GuacamoleException
+	 */
+	public GuacamoleInstruction decode(String str) throws GuacamoleException {
 		int length = str.length();
 		int offset = 0;
 		while (length > 0) {
@@ -53,7 +61,7 @@ public class GuacaBrowserDecoder {
 
 			// If no instruction is available, it must be incomplete
 			if (!parser.hasNext())
-				throw new GuacamoleServerException("Filtered write() contained an incomplete instruction.");
+				throw new DecoderWsMsgException("Filtered write() contained an incomplete instruction.");
 
 			// Write single instruction through filter
 		}

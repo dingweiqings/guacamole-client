@@ -16,58 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.guacamole.nio;
+package org.apache.guacamole;
 
 /**
- * Guacamole Server host and port
+ * Decoder ws msg exception
  */
-public class GuacdProperties {
-	/**
-	 * Hostname
-	 */
-	private String hostname;
-	/**
-	 * Port
-	 */
-	private int port=4822;
-
-	/**
-	 * Constructor
-	 * @param hostname  Guacamole Server host or ip
-	 * @param port port that Guacamole Server listening to
-	 */
-	public GuacdProperties(String hostname, int port) {
-		this.hostname = hostname;
-		this.port = port;
+public class DecoderWsMsgException extends GuacamoleClientException{
+	public DecoderWsMsgException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
-	/**
-	 * Get property
-	 */
-	public String getHostname() {
-		return hostname;
+	public DecoderWsMsgException(String message) {
+		super(message);
 	}
 
-	/**
-	 * Set property
-	 * @param hostname hostname
-	 */
-	public void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
-
-	/**
-	 * Get property
-	 */
-	public int getPort() {
-		return port;
-	}
-
-	/**
-	 * Set property
-	 * @param port port
-	 */
-	public void setPort(int port) {
-		this.port = port;
+	public DecoderWsMsgException(Throwable cause) {
+		super(cause);
 	}
 }

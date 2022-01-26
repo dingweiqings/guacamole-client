@@ -31,18 +31,24 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 解析 guaca -> ws server
+ * guacamole server -> ws server
  */
 public class InstructionDecoder extends ByteToMessageDecoder {
+	/**
+	 * Logger
+	 */
 	Logger logger = LoggerFactory.getLogger(InstructionDecoder.class);
 
-	public GuacamoleInstruction readInstruction(String str) throws GuacamoleException {
+	/**
+	 * Read instruction
+	 * @param str  str decode to instruction
+	 * @return GuacamoleInstruction
+	 */
+	public GuacamoleInstruction readInstruction(String str){
 		// Get instruction
 		//logger.info("Decoder {}",str);
 		char[] instructionBuffer = str.toCharArray();
 		// If EOF, return EOF
-		if (instructionBuffer == null)
-			return null;
 
 		// Start of element
 		int elementStart = 0;
@@ -94,15 +100,14 @@ public class InstructionDecoder extends ByteToMessageDecoder {
 
 		// Pull opcode off elements list
 		String opcode = elements.removeFirst();
-		//	logger.info("Read instruction from guacd  op code {},element {}", opcode, elements);
-		// Create instruction
-		GuacamoleInstruction instruction = new GuacamoleInstruction(
-				opcode,
-				elements.toArray(new String[elements.size()])
-		);
-
+		if(logger.isTraceEnabled()){
+			logger.info("Read instruction from guacamole  op code {},element {}", opcode, elements);
+		}
 		// Return parsed instruction
-		return instruction;
+		return new GuacamoleInstruction(
+				opcode,
+				elements.toArray(new String[0])
+		);
 
 	}
 

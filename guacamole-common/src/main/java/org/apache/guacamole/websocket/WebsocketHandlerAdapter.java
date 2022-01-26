@@ -20,36 +20,45 @@ package org.apache.guacamole.websocket;
 
 import org.apache.guacamole.nio.ConnectionHelper;
 import org.apache.guacamole.nio.GuacdProperties;
-import org.apache.guacamole.nio.TransferTunnel;
+import org.apache.guacamole.nio.Bridger;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 import javax.websocket.Session;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-/** 使用websocket时，继承这个endpoint，在和浏览器onOpen，onMessage 调用即可
+/**
+ *  Websocket Handler Adapter , override onOpen, and add custom onMessage logic code
  */
-public abstract class WebsocketHandler {
-	public static final Map<String, TransferTunnel> GUACAD_HAND_MAP=new ConcurrentHashMap<>();
+public abstract class WebsocketHandlerAdapter {
+	public static final Map<String, Bridger> GUACAD_HAND_MAP=new ConcurrentHashMap<>();
 
-	public static final Map<String,TransferTunnel>  WS_HAND_MAP=new ConcurrentHashMap<>();
+	public static final Map<String, Bridger>  WS_HAND_MAP=new ConcurrentHashMap<>();
 
 	public abstract  GuacdProperties getGuacdProperties();
 
 	public abstract GuacamoleConfiguration getGuacamoleConfiguration();
 
-	public WebsocketHandler() {
+	public WebsocketHandlerAdapter() {
 	}
 
+	/**
+	 *	Ws open connection
+	 * @param session WsSession
+	 */
 	public void onOpen(Session session) {
 		ConnectionHelper connectionHelper = ConnectionHelper.getInstance(getGuacdProperties());
 		WsSession wsSession = new TomcatWsSession(session);
-		TransferTunnel tunnel = connectionHelper.openConnection(wsSession, getGuacamoleConfiguration());
+		Bridger tunnel = connectionHelper.openConnection(wsSession, getGuacamoleConfiguration());
 		GUACAD_HAND_MAP.put(tunnel.getChannel().id().toString(), tunnel);
 		WS_HAND_MAP.put(wsSession.id(), tunnel);
 	}
 
-	public TransferTunnel getTransferTunnel(Session session){
+	/**
+	 * Get property
+	 * @param session
+	 */
+	public Bridger getTransferTunnel(Session session){
 		return WS_HAND_MAP.get(session.getId());
 	}
 

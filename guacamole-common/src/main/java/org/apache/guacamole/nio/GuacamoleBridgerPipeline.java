@@ -28,17 +28,25 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
+ *  Netty pipelint
  */
-public class GuacaTransferPipeline extends ChannelInitializer<SocketChannel> {
+public class GuacamoleBridgerPipeline extends ChannelInitializer<SocketChannel> {
+	/**
+	 * MAX FRAME LENGTH
+	 */
 	private final static int MAX_FRAME_LENGTH = 1024 * 1024;
 
+	/**
+	 * Init channel
+	 * @param ch socket channel
+	 */
 	@Override
-	protected void initChannel(SocketChannel ch) throws Exception {
+	protected void initChannel(SocketChannel ch) {
 		ChannelPipeline ph = ch.pipeline();
 		ByteBuf delimiter = Unpooled.copiedBuffer(";".getBytes(StandardCharsets.UTF_8));
 		ph.addFirst("framer", new DelimiterBasedFrameDecoder(MAX_FRAME_LENGTH, false, delimiter));
 		ph.addLast("decoder", new InstructionDecoder());
-		ph.addLast("handler", new GuacaHandler()); //客户端的逻辑
+		ph.addLast("handler", new GuacamoleHandler()); //handle  msg from guacamole
 		ph.addLast("encoder", new InstructionEnc());
 	}
 }
