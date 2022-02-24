@@ -207,47 +207,47 @@
                     <configuration>
                         <source>1.8</source>
                         <target>1.8</target>
-<!--                        <compilerArgs>-->
-<!--                            <arg>-Xlint:all</arg>-->
-<!--                            <arg>-Werror</arg>-->
-<!--                        </compilerArgs>-->
-<!--                        <fork>true</fork>-->
+                        <compilerArgs>
+                            <arg>-Xlint:all</arg>
+                            <arg>-Werror</arg>
+                        </compilerArgs>
+                        <fork>true</fork>
                     </configuration>
                 </plugin>
 
                 <!-- Provide "generate-license-files" execution for automatic
                     generation of LICENSE and NOTICE files -->
-<!--                <plugin>-->
-<!--                    <groupId>org.codehaus.mojo</groupId>-->
-<!--                    <artifactId>exec-maven-plugin</artifactId>-->
-<!--                    <version>3.0.0</version>-->
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <id>generate-license-files</id>-->
-<!--                            <phase>none</phase>-->
-<!--                            <configuration>-->
-<!--                                <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>-->
-<!--                                <arguments>-->
-<!--                                    <argument>${dependency.list.directory}</argument>-->
-<!--                                    <argument>${project.build.directory}/licenses</argument>-->
-<!--                                </arguments>-->
-<!--                                <environmentVariables>-->
-<!--                                    <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>-->
-<!--                                </environmentVariables>-->
-<!--                            </configuration>-->
-<!--                            <goals>-->
-<!--                                <goal>exec</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
-<!--                </plugin>-->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>generate-license-files</id>
+                            <phase>none</phase>
+                            <configuration>
+                                <executable>${rootlocation}/doc/licenses/generate-license-files.sh</executable>
+                                <arguments>
+                                    <argument>${dependency.list.directory}</argument>
+                                    <argument>${project.build.directory}/licenses</argument>
+                                </arguments>
+                                <environmentVariables>
+                                    <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                </environmentVariables>
+                            </configuration>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
 
                 <!-- Use latest version of JavaScript/CSS minification plugin -->
-<!--                <plugin>-->
-<!--                    <groupId>com.github.buckelieg</groupId>-->
-<!--                    <artifactId>minify-maven-plugin</artifactId>-->
-<!--                    <version>2.0.1</version>-->
-<!--                </plugin>-->
+                <plugin>
+                    <groupId>com.github.buckelieg</groupId>
+                    <artifactId>minify-maven-plugin</artifactId>
+                    <version>2.0.1</version>
+                </plugin>
 
                 <!-- Explicitly use latest versions of core plugins -->
                 <plugin>
@@ -267,23 +267,23 @@
                 </plugin>
 
                 <!-- Provide default configurations for attaching JavaDoc and source -->
-<!--                <plugin>-->
-<!--                    <groupId>org.apache.maven.plugins</groupId>-->
-<!--                    <artifactId>maven-javadoc-plugin</artifactId>-->
-<!--                    <version>3.2.0</version>-->
-<!--                    <configuration>-->
-<!--                        <detectOfflineLinks>false</detectOfflineLinks>-->
-<!--                        <source>8</source>-->
-<!--                    </configuration>-->
-<!--                    <executions>-->
-<!--                        <execution>-->
-<!--                            <id>attach-javadocs</id>-->
-<!--                            <goals>-->
-<!--                                <goal>jar</goal>-->
-<!--                            </goals>-->
-<!--                        </execution>-->
-<!--                    </executions>-->
-<!--                </plugin>-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <configuration>
+                        <detectOfflineLinks>false</detectOfflineLinks>
+                        <source>8</source>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>

@@ -159,6 +159,7 @@ public class GuacamoleHandler extends SimpleChannelInboundHandler<GuacamoleInstr
 			if (timezone != null)
 				writeGuacamoleInstruction(new GuacamoleInstruction("timezone", info.getTimezone()), ctx);
 		}
+
 		//now client connect
 		writeGuacamoleInstruction(new GuacamoleInstruction("connect", arg_values), ctx);
 	}
