@@ -49,6 +49,10 @@
         <module>guacamole-auth-sso</module>
         <module>guacamole-auth-totp</module>
 
+        <!-- Additional features -->
+        <module>guacamole-history-recording-storage</module>
+        <module>guacamole-vault</module>
+
     </modules>
 
     <build>
@@ -64,12 +68,11 @@
                         <id>copy-runtime-dependencies</id>
                         <phase>prepare-package</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <includeScope>runtime</includeScope>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                            <excludes>META-INF/*.SF,META-INF/*.DSA</excludes>
                         </configuration>
                     </execution>
                 </executions>
