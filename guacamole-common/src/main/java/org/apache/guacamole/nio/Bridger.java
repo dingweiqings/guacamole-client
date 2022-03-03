@@ -155,7 +155,7 @@ public class Bridger {
 	 * @throws GuacamoleClientException
 	 * @throws IOException
 	 */
-	public void sendInstruction(GuacamoleInstruction instruction) throws GuacamoleConnectionClosedException,GuacamoleClientException,IOException {
+	public void sendInstruction(GuacamoleInstruction instruction) throws GuacamoleClientException,IOException {
 		session.sendText(instruction.toString());
 	}
 

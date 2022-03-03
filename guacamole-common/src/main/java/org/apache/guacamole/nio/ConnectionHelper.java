@@ -86,47 +86,28 @@ public class ConnectionHelper {
 	 * @return
 	 */
 	public Bridger openConnection(WsSession wsSession, GuacamoleConfiguration  configuration) {
-		Bridger tunnel = createOneBridger(configuration);
-		tunnel.session = wsSession;
+		Bridger bridger = createOneBridger(configuration);
+		bridger.session = wsSession;
 		try {
-			tunnel.channel = bridgerBootstrap.connect();
+			bridger.channel = bridgerBootstrap.connect();
 			//TunnelEndpointNetty.GUACAD_HAND_MAP.put(channel!!.id().toString(), this)
 			//TunnelEndpointNetty.BROWSER_HAND_MAP.put(session!!.id().toString(), this)
-			tunnel.sayHello();
-		} catch (GuacamoleException e) {
-			logger.warn("Create tunnel failure ", e);
-		} catch (IOException e) {
+			bridger.sayHello();
+		} catch (GuacamoleException | IOException e) {
 			logger.warn("Create tunnel failure ", e);
 		}
+		// open,send tunnel uuid
 		try {
-			// open,send tunnel uuid
-			tunnel.sendInstruction(
+			bridger.sendInstruction(
 					new GuacamoleInstruction(
 							GuacamoleTunnel.INTERNAL_DATA_OPCODE,
-							tunnel.getUUID().toString()
-				)
+							bridger.getUUID().toString()
+					)
 			);
+		} catch ( IOException |GuacamoleClientException e) {
+			logger.warn("Create tunnel failure ", e);
 		}
-		// Catch any thrown guacamole exception and attempt
-		// to pass within the WebSocket connection, logging
-		// each error appropriately.
-		catch (GuacamoleClientException e) {
-			logger.info("WebSocket connection terminated: {}", e.getMessage());
-			logger.debug("WebSocket connection terminated due to client error.", e);
-			closeConnection(tunnel,
-					 e.getStatus().getGuacamoleStatusCode(),
-					e.getWebSocketCode()
-			);
-		} catch (GuacamoleConnectionClosedException e) {
-			logger.error("Connection to guacamole server closed.", e.getMessage());
-			logger.debug("Connection to guacamole server closed.", e);
-			closeConnection(tunnel, GuacamoleStatus.SUCCESS);
-		} catch (IOException e) {
-			logger.error("It occurs I/O error when send instruction to guacamole server.", e.getMessage());
-			logger.debug("I/O error prevents further reads.", e);
-			closeConnection(tunnel, GuacamoleStatus.SERVER_ERROR);
-		}
-		return tunnel;
+		return bridger;
 	}
 
 	/**

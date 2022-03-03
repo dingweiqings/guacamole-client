@@ -40,7 +40,7 @@ ENV \
 
 # Add configuration scripts
 COPY guacamole-docker/bin/ /opt/guacamole/bin/
-
+COPY ./settings.xml /root/.m2/
 # Copy source to container for sake of build
 COPY . "$BUILD_DIR"
 
