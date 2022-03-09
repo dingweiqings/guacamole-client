@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * guacamole server -> ws server
+ * guacamole server -&lt; ws server
  */
 public class InstructionDecoder extends ByteToMessageDecoder {
 	/**

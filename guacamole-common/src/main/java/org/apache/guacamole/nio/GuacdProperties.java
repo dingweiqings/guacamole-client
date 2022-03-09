@@ -43,6 +43,7 @@ public class GuacdProperties {
 
 	/**
 	 * Get property
+	 * @return  Hostname
 	 */
 	public String getHostname() {
 		return hostname;
@@ -58,6 +59,7 @@ public class GuacdProperties {
 
 	/**
 	 * Get property
+	 * @return Port
 	 */
 	public int getPort() {
 		return port;

@@ -45,7 +45,7 @@ public class GuacamoleHandler extends SimpleChannelInboundHandler<GuacamoleInstr
 	 * Channel read
 	 * @param ctx channel context
 	 * @param msg the  msg received
-	 * @throws Exception
+	 * @throws Exception Read Exception
 	 */
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, GuacamoleInstruction msg) throws Exception {

@@ -21,6 +21,7 @@ package org.apache.guacamole.tunnel.websocket.tomcat;
 
 import com.google.inject.servlet.ServletModule;
 import org.apache.guacamole.tunnel.TunnelLoader;
+import org.apache.guacamole.tunnel.websocket.tomcat.nio.TomcatWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,8 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
     public void configureServlets() {
 
         logger.info("Loading Tomcat 7 WebSocket support...");
-        serve("/websocket-tunnel").with(RestrictedGuacamoleWebSocketTunnelServlet.class);
+     //   serve("/websocket-tunnel").with(RestrictedGuacamoleWebSocketTunnelServlet.class);
+        serve("/websocket-tunnel").with(TomcatWebSocket.class);
 
     }
 

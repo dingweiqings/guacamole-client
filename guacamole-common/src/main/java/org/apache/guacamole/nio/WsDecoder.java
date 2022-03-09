@@ -44,8 +44,8 @@ public class WsDecoder {
 	/**
 	 * Parser Instruction
 	 * @param str str decode to instruction
-	 * @return
-	 * @throws GuacamoleException
+	 * @return GuacamoleInstruction
+	 * @throws GuacamoleException parse error ,throw GucamoleException
 	 */
 	public GuacamoleInstruction decode(String str) throws GuacamoleException {
 		int length = str.length();

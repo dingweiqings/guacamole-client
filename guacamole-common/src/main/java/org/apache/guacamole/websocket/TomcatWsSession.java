@@ -21,10 +21,15 @@ import javax.websocket.Session;
 import java.io.IOException;
 
 /**
+ * WsSession implement by Tomcat Session
  */
 public class TomcatWsSession implements WsSession {
 	Session session;
 
+	/**
+	 * Constructor
+	 * @param session ws session
+	 */
 	public TomcatWsSession(Session session) {
 		this.session = session;
 	}

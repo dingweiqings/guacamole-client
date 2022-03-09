@@ -74,6 +74,7 @@ public class ConnectionHelper {
 	/**
 	 * Create tunnel
 	 * @param configuration  guacamole configuration
+	 * @return Bridger
 	 */
 	private Bridger createOneBridger(GuacamoleConfiguration configuration){
 		return new Bridger(configuration);
@@ -83,7 +84,7 @@ public class ConnectionHelper {
 	 * Open connection
 	 * @param wsSession  websocket session
 	 * @param configuration  guacamole configuration
-	 * @return
+	 * @return Bridger instance
 	 */
 	public Bridger openConnection(WsSession wsSession, GuacamoleConfiguration  configuration) {
 		Bridger bridger = createOneBridger(configuration);

@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Ws ---> Bridger ----> Guacamole Server(GS)
+ * Ws ---&lt; Bridger ----&lt; Guacamole Server(GS)
  * Ws  &lt;--- Bridger &lt;---- Guacamole Server(GS)
  */
 public class Bridger {
@@ -85,6 +85,7 @@ public class Bridger {
 
 	/**
 	 * Get property
+	 * @return NioChannel
 	 */
 	public Channel getChannel() {
 		return channel;
@@ -101,6 +102,7 @@ public class Bridger {
 	}
 	/**
 	 * Get property
+	 * @return GuacamoleConfiguration
 	 */
 	public GuacamoleConfiguration getConfig() {
 		return config;
@@ -115,6 +117,7 @@ public class Bridger {
 	}
 	/**
 	 * Get property
+	 * @return Id
 	 */
 	public String getId() {
 		return id;
@@ -129,19 +132,21 @@ public class Bridger {
 	}
 	/**
 	 * Get property
+	 * @return UUID
 	 */
 	public UUID getUUID() {
 		return uuid;
 	}
 	/**
 	 * Set property ,Ws uuid
+	 * @param uuid uuid
 	 */
 	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
 	/**
 	 * close left socket and right tcp channel
-	 * @throws IOException
+	 * @throws IOException IOException
 	 */
 	public void close() throws IOException {
 		channel.close();
@@ -151,9 +156,8 @@ public class Bridger {
 	/**
 	 * Send instruction to ws client
 	 * @param instruction which to send ws client
-	 * @throws GuacamoleConnectionClosedException
-	 * @throws GuacamoleClientException
-	 * @throws IOException
+	 * @throws GuacamoleClientException GuacamoleClientException
+	 * @throws IOException IOException
 	 */
 	public void sendInstruction(GuacamoleInstruction instruction) throws GuacamoleClientException,IOException {
 		session.sendText(instruction.toString());
@@ -162,7 +166,7 @@ public class Bridger {
 	/**
 	 * When bridger receives guacamole instruction , then send to ws peer in browser
 	 *
-	 * @param ins
+	 * @param ins guacd instruction
 	 */
 	public void receiveGuacamoleInstruction(GuacamoleInstruction ins) {
 		try {
@@ -181,7 +185,7 @@ public class Bridger {
 	/**
 	 * When bridger get msg from ws peer ,then send to guacamole server
 	 *
-	 * @param msg
+	 * @param msg ws msg
 	 */
 	public void onMessage(String msg) {
 		if(logger.isTraceEnabled()){
@@ -219,8 +223,8 @@ public class Bridger {
 
 	/**
 	 * Send instruction to GS
-	 * @param instruction
-	 * @return
+	 * @param instruction  guacd instruction
+	 * @return ChannelFuture
 	 */
 	public ChannelFuture writeGuacamoleInstruction(GuacamoleInstruction instruction) {
 		return channel.writeAndFlush(instruction);
@@ -228,7 +232,7 @@ public class Bridger {
 
 	/**
 	 * say hello
-	 * @throws GuacamoleServerException
+	 * @throws GuacamoleServerException server exception
 	 */
 	public void sayHello() throws GuacamoleServerException {
 

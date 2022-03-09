@@ -43,7 +43,7 @@ public class BridgerBootstrap {
 	/**
 	 * Timeout config
 	 */
-	private final static long CONNECT_WAIT_TIMEOUT = 1000;
+	private static final long CONNECT_WAIT_TIMEOUT = 1000;
 	/**
 	 * Guacamole properties
 	 */
@@ -76,6 +76,7 @@ public class BridgerBootstrap {
 	 * Connect to Guacamole Server
 	 * @throws IOException
 	 * 			it occurs timeout or error when channel connects guacamole server  throw IOException
+	 * @return Return  a connected NioChannel
 	 */
 	public Channel connect() throws IOException {
 		ChannelFuture f = bootstrap.connect(guacdProperties.getHostname(), guacdProperties.getPort());

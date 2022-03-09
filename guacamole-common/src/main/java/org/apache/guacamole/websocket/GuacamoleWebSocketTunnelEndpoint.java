@@ -295,6 +295,10 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
 
     }
 
+    /**
+     * Get msg from ws client
+     * @param message ws msg
+     */
     @OnMessage
     public void onMessage(String message) {
 

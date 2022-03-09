@@ -28,7 +28,7 @@ import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- *  Netty pipelint
+ *  Netty pipeline
  */
 public class GuacamoleBridgerPipeline extends ChannelInitializer<SocketChannel> {
 	/**

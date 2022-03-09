@@ -30,7 +30,7 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 
 /**
- * ws server -> ws client guaca
+ * ws server -&lt; ws client guaca
  */
 public class InstructionEnc extends MessageToByteEncoder<GuacamoleInstruction> {
 	/**

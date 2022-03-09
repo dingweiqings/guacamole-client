@@ -31,12 +31,25 @@ import java.util.concurrent.ConcurrentHashMap;
  *  Websocket Handler Adapter , override onOpen, and add custom onMessage logic code
  */
 public abstract class WebsocketHandlerAdapter {
+	/**
+	 * GUACAD_HAND_MAP ,key,Bridger
+	 */
 	public static final Map<String, Bridger> GUACAD_HAND_MAP=new ConcurrentHashMap<>();
-
+	/**
+	 * Ws hand map
+	 */
 	public static final Map<String, Bridger>  WS_HAND_MAP=new ConcurrentHashMap<>();
 
+	/**
+	 * Get property
+	 * @return GuacdProperties
+	 */
 	public abstract  GuacdProperties getGuacdProperties();
 
+	/**
+	 * Get property
+	 * @return GuacamoleConfiguration
+	 */
 	public abstract GuacamoleConfiguration getGuacamoleConfiguration();
 
 	public WebsocketHandlerAdapter() {
@@ -56,7 +69,8 @@ public abstract class WebsocketHandlerAdapter {
 
 	/**
 	 * Get property
-	 * @param session
+	 * @param session ws session
+	 * @return Bridger
 	 */
 	public Bridger getTransferTunnel(Session session){
 		return WS_HAND_MAP.get(session.getId());

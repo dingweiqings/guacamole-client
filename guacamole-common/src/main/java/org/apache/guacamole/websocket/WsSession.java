@@ -25,10 +25,22 @@ import java.io.IOException;
  *
  */
 public interface WsSession {
-
+	/**
+	 * Send text to ws client
+	 * @param data data to send
+	 * @throws IOException IO Exception
+	 */
 	void sendText(String data) throws IOException;
 
+	/**
+	 * session close
+	 * @throws IOException IO Exception
+	 */
 	void close() throws IOException;
 
+	/**
+	 * Get session id
+	 * @return str ,session id
+	 */
 	String id();
 }
